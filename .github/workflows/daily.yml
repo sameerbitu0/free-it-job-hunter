@@ -1,0 +1,32 @@
+name: Daily IT Job Hunter
+
+on:
+  workflow_dispatch:
+  schedule:
+    # Runs daily at 04:00 UTC (09:00 Pakistan time)
+    - cron: "0 4 * * *"
+
+permissions:
+  contents: read
+
+jobs:
+  collect-jobs:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Collect jobs
+        run: python job_hunter.py
+
+      - name: Upload job report
+        uses: actions/upload-artifact@v4
+        with:
+          name: it-job-hunter-report
+          path: output/
+          retention-days: 14
